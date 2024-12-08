@@ -1,32 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:elevation="4dp"
+    android:layout_margin="8dp"
+    android:backgroundTint="#FFFFFF">
 
+    <!-- Image de cours -->
     <ImageView
         android:id="@+id/courseImage"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_vertical"
         android:scaleType="centerCrop"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/rounded_image_background"/>
 
-    <TextView
-        android:id="@+id/courseTitle"
-        android:layout_width="wrap_content"
+    <!-- Contenu du cours -->
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Course Title"
-        android:textSize="18sp"
-        android:textColor="#0d151c"
-        android:fontFamily="sans-serif-medium" />
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/courseSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Number of courses"
-        android:textSize="14sp"
-        android:textColor="#49779c" />
+        <!-- Titre -->
+        <TextView
+            android:id="@+id/courseTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="The Beatles: The Music, the Myth, the Legend"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#0d151c"
+            android:ellipsize="end"
+            android:maxLines="2" />
+
+        <!-- Sous-titre -->
+        <TextView
+            android:id="@+id/courseSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="By University of Rochester"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif"
+            android:textColor="#49779c"
+            android:layout_marginTop="4dp" />
+
+        <!-- Catégorie -->
+        <TextView
+            android:id="@+id/courseCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Music, Art and Culture"
+            android:textSize="12sp"
+            android:fontFamily="sans-serif"
+            android:textColor="#A7A7A7"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
 </LinearLayout>
