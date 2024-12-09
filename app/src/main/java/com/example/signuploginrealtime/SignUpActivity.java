@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +34,18 @@ public class SignUpActivity extends AppCompatActivity {
         signupPassword = findViewById(R.id.signup_password);
         loginRedirectText = findViewById(R.id.loginRedirectText);
         signupButton = findViewById(R.id.signup_button);
+        Spinner roleSpinner = findViewById(R.id.signup_role_spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.roles_array,
+                android.R.layout.simple_spinner_item
+        );
 
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Set the adapter to the Spinner
+        roleSpinner.setAdapter(adapter);
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -44,8 +57,10 @@ public class SignUpActivity extends AppCompatActivity {
                 String email = signupEmail.getText().toString();
                 String username = signupUsername.getText().toString();
                 String password = signupPassword.getText().toString();
+                String role = roleSpinner.getSelectedItem().toString(); // Get selected role
 
-                HelperClass helperClass = new HelperClass(name, email, username, password);
+
+                HelperClass helperClass = new HelperClass(name, email, username, password,role);
                 reference.child(username).setValue(helperClass);
 
                 Toast.makeText(SignUpActivity.this, "You have signup successfully!", Toast.LENGTH_SHORT).show();

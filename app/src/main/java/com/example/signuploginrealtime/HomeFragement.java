@@ -1,34 +1,44 @@
 package com.example.signuploginrealtime;
 
+import android.annotation.SuppressLint;
+import android.database.Cursor;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import java.util.ArrayList;
-import java.util.List;
-
 
 public class HomeFragement extends Fragment {
     private TextView welcomeText;
     private ListView coursesListView;
-    private CourseAdapter courseAdapter;
-    @Override
+    private CourseAdapter_Crud courseAdapter;
+    private DataBaseHelper dbHelper;
 
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         welcomeText = view.findViewById(R.id.user_name);
+        coursesListView = view.findViewById(R.id.coursesListView);
 
+        // Initialize the database helper
+        dbHelper = new DataBaseHelper(getActivity());
 
-        // Récupérer les arguments passés depuis l'activité
-        Bundle bundle = getArguments();
-        /*if (bundle != null) {
+        // Retrieve courses from the database
+        ArrayList<Course_Crud> courses = getCoursesFromDatabase();
+
+        // Set up the adapter with the data
+        courseAdapter = new CourseAdapter_Crud(getActivity(), courses);
+        coursesListView.setAdapter(courseAdapter);
+
+        // Optionally set the welcome message
+        /*Bundle bundle = getArguments();
+        if (bundle != null) {
             String userName = bundle.getString("userName");
             if (userName != null) {
                 welcomeText.setText("Welcome, " + userName);
@@ -36,24 +46,52 @@ public class HomeFragement extends Fragment {
                 welcomeText.setText("Welcome, User");
             }
         }*/
-        coursesListView = view.findViewById(R.id.coursesListView);
 
-        List<Course> courses = new ArrayList<>();
-        courses.add(new Course("Interior Design", "25 courses", "https://cdn.usegalileo.ai/stability/5cb1a0ad-74cb-417f-8941-43aec18b6f38.png"));
-        courses.add(new Course("Fashion Design", "22 courses", "https://cdn.usegalileo.ai/stability/7d0812c4-b42f-4ae7-9420-ee1bae90eacb.png"));
-        courses.add(new Course("Product Design", "15 courses", "https://cdn.usegalileo.ai/stability/e16856cc-b9c1-41db-a153-831e6bf7ce9b.png"));
-        courses.add(new Course("Product Design", "15 courses", "https://cdn.usegalileo.ai/stability/e16856cc-b9c1-41db-a153-831e6bf7ce9b.png"));
-        courses.add(new Course("Product Design", "15 courses", "https://cdn.usegalileo.ai/stability/e16856cc-b9c1-41db-a153-831e6bf7ce9b.png"));
-        courses.add(new Course("Product Design", "15 courses", "https://cdn.usegalileo.ai/stability/e16856cc-b9c1-41db-a153-831e6bf7ce9b.png"));
-        courses.add(new Course("Product Design", "15 courses", "https://cdn.usegalileo.ai/stability/e16856cc-b9c1-41db-a153-831e6bf7ce9b.png"));
+        // Set item click listener
+        coursesListView.setOnItemClickListener((parent, view1, position, id) -> {
+            Course_Crud selectedCourse = courseAdapter.getItem(position);
 
+            // Create a new instance of DetailsFragment and pass the data
+            DetailsFragment detailsFragment = new DetailsFragment();
+            Bundle courseBundle = new Bundle();
+            courseBundle.putString("courseTitle", selectedCourse.getTitle());
+            courseBundle.putString("courseCategory", selectedCourse.getCategory());
+            courseBundle.putString("courseDescription", selectedCourse.getDescription());
+            courseBundle.putString("courseImageUrl", selectedCourse.getImage());
+            detailsFragment.setArguments(courseBundle);
 
-        courseAdapter = new CourseAdapter(getActivity(), R.layout.list_item_course, courses);
-        coursesListView.setAdapter(courseAdapter);
-
+            // Replace the current fragment with DetailsFragment
+            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.welcomeLayout, detailsFragment);
+            transaction.addToBackStack(null); // Add to back stack to enable navigation back
+            transaction.commit();
+        });
 
         return view;
     }
 
-}
+    private ArrayList<Course_Crud> getCoursesFromDatabase() {
+        ArrayList<Course_Crud> courses = new ArrayList<>();
+        Cursor cursor = dbHelper.getAllCourses(); // Assuming this method returns a Cursor with course data
 
+        if (cursor != null && cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                // Extract data from the Cursor
+                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex(DataBaseHelper.COLUMN_ID));
+                @SuppressLint("Range") String title = cursor.getString(cursor.getColumnIndex(DataBaseHelper.COLUMN_TITLE));
+                @SuppressLint("Range") String category = cursor.getString(cursor.getColumnIndex(DataBaseHelper.COLUMN_CATEGORY));
+                @SuppressLint("Range") String description = cursor.getString(cursor.getColumnIndex(DataBaseHelper.COLUMN_DESCRIPTION));
+                @SuppressLint("Range") String image = cursor.getString(cursor.getColumnIndex(DataBaseHelper.COLUMN_IMAGE));
+                @SuppressLint("Range") String youtubeUrl = cursor.getString(cursor.getColumnIndex(DataBaseHelper.COLUMN_VIDEO_YOUTUBE));
+
+                // Create a new Course_Crud object and add it to the list
+                courses.add(new Course_Crud(id, title, category, description, image, youtubeUrl));
+            }
+            cursor.close();
+        } else {
+            Toast.makeText(getActivity(), "No courses found!", Toast.LENGTH_SHORT).show();
+        }
+
+        return courses;
+    }
+}

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -78,42 +79,45 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public void checkUser(){
+    public void checkUser() {
         String userUsername = loginUsername.getText().toString().trim();
         String userPassword = loginPassword.getText().toString().trim();
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        Query checkUserDatabase = reference.orderByChild("username").equalTo(userUsername);//This query checks for a user in the database whose username field matches the userUsername entered by the user.
+        Query checkUserDatabase = reference.orderByChild("username").equalTo(userUsername);
 
-        checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() { //Adding a Listener for Database Changes
+        checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                if (snapshot.exists()){
-
+                if (snapshot.exists()) {
                     loginUsername.setError(null);
                     String passwordFromDB = snapshot.child(userUsername).child("password").getValue(String.class);
 
-                    if (passwordFromDB.equals(userPassword)) {
+                    if (passwordFromDB != null && passwordFromDB.equals(userPassword)) {
                         loginUsername.setError(null);
 
                         String nameFromDB = snapshot.child(userUsername).child("name").getValue(String.class);
                         String emailFromDB = snapshot.child(userUsername).child("email").getValue(String.class);
                         String usernameFromDB = snapshot.child(userUsername).child("username").getValue(String.class);
+                        String roleFromDB = snapshot.child(userUsername).child("role").getValue(String.class);
 
-                        Intent intent = new Intent(LoginActivity.this, HomeCourses.class);
-                        Intent intent1 = new Intent(LoginActivity.this, MainActivity.class);
+                        // Create an intent based on the role
+                        Intent intent;
+                        if ("Student".equalsIgnoreCase(roleFromDB)) {
+                            intent = new Intent(LoginActivity.this, HomeCourses.class);
+                        } else if ("Instructor".equalsIgnoreCase(roleFromDB)) {
+                            intent = new Intent(LoginActivity.this, CRUD.class); // Replace with the actual activity name for instructors
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Unknown role: " + roleFromDB, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-
+                        // Add common extras
                         intent.putExtra("name", nameFromDB);
                         intent.putExtra("email", emailFromDB);
                         intent.putExtra("username", usernameFromDB);
                         intent.putExtra("password", passwordFromDB);
-
-                        intent1.putExtra("name", nameFromDB);
-                        intent1.putExtra("email", emailFromDB);
-                        intent1.putExtra("username", usernameFromDB);
-                        intent1.putExtra("password", passwordFromDB);
+                        intent.putExtra("role", roleFromDB);
 
                         startActivity(intent);
                     } else {
@@ -128,8 +132,9 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(LoginActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 }

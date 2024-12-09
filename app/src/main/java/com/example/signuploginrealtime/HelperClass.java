@@ -3,7 +3,7 @@ package com.example.signuploginrealtime;
 
 public class HelperClass {
 
-    String name, email, username, password;
+    String name, email, username, password,role;
 
     public String getName() {
         return name;
@@ -36,12 +36,20 @@ public class HelperClass {
     public void setPassword(String password) {
         this.password = password;
     }
+    public String getRole() {
+        return role;
+    }
 
-    public HelperClass(String name, String email, String username, String password) {
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public HelperClass(String name, String email, String username, String password ,String role) {
         this.name = name;
         this.email = email;
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     public HelperClass() {

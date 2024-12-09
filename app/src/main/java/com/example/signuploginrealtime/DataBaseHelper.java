@@ -6,6 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DataBaseHelper extends SQLiteOpenHelper {
 
     // Database Name and Version
@@ -60,8 +63,10 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     // Retrieve all courses
     public Cursor getAllCourses() {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.query(TABLE_COURSES, null, null, null, null, null, null);
+        String query = "SELECT * FROM " + TABLE_COURSES;
+        return db.rawQuery(query, null);
     }
+
 
     // Update a course
     public int updateCourse(int id, String title, String category, String image, String description, String videoYouTube) {
