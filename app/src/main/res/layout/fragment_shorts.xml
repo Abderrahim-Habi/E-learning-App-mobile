@@ -1,19 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lavender"
-    tools:context=".ShortsFragment"
-    android:id="@+id/main">
+    android:orientation="vertical"
+    android:background="@color/grey"
+    tools:context=".ShortsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- Coming Soon Message -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Shorts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Coming Soon!"
         android:gravity="center"
         android:textSize="30sp"
-        android:textColor="@color/white"/>
+        android:textColor="@color/white"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center"/>
 
-</FrameLayout>
+    <!-- ListView for Courses -->
+    <ListView
+        android:id="@+id/comingSoonCoursesList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"
+        android:background="@android:color/white"
+        tools:listitem="@layout/list_item_course"
+        android:layout_marginTop="20dp" /> <!-- Adds margin for spacing -->
+
+</LinearLayout>

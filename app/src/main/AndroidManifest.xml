@@ -13,13 +13,19 @@
         android:theme="@style/Theme.SignUpLoginRealTime"
         tools:targetApi="31">
         <activity
-            android:name=".CRUD"
+            android:name=".ForgotPassword"
+            android:exported="false" />
+        <activity
+            android:name=".Intro"
             android:exported="false">
 
         </activity>
         <activity
+            android:name=".CRUD"
+            android:exported="false" />
+        <activity
             android:name=".HomeCourses"
-            android:exported="false">
+            android:exported="false" >
 
         </activity>
         <activity
@@ -27,9 +33,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false" >
-
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".LoginActivity"
             android:exported="false" />

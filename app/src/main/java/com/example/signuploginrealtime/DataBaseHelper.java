@@ -69,7 +69,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
 
 
     // Update a course
-    public int updateCourse(int id, String title, String category, String image, String description, String videoYouTube) {
+    /*public int updateCourse(int id, String title, String category, String image, String description, String videoYouTube) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_TITLE, title);
@@ -78,11 +78,28 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_DESCRIPTION, description);
         values.put(COLUMN_VIDEO_YOUTUBE, videoYouTube);
         return db.update(TABLE_COURSES, values, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
+    }*/
+    public boolean updateCourse(int id, String title, String category, String description, String imageUrl, String youtubeUrl) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("title", title);
+        contentValues.put("category", category);
+        contentValues.put("description", description);
+        contentValues.put("image", imageUrl);
+        contentValues.put("youtubeUrl", youtubeUrl);
+
+        int result = db.update("courses", contentValues, "id = ?", new String[]{String.valueOf(id)});
+        return result > 0; // Returns true if the course was updated successfully
     }
 
     // Delete a course
-    public int deleteCourse(int id) {
+    /*public int deleteCourse(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(TABLE_COURSES, COLUMN_ID + "=?", new String[]{String.valueOf(id)});
+    }*/
+    public boolean deleteCourse(int courseId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete("courses", "id = ?", new String[]{String.valueOf(courseId)});
+        return result > 0; // Returns true if the course was deleted successfully
     }
 }

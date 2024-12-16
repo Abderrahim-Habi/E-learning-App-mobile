@@ -1,5 +1,6 @@
 package com.example.signuploginrealtime;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -12,6 +13,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -20,6 +23,9 @@ public class SignUpActivity extends AppCompatActivity {
     EditText signupName, signupUsername, signupEmail, signupPassword;
     TextView loginRedirectText;
     Button signupButton;
+    Spinner roleSpinner;
+
+    FirebaseAuth mAuth;
     FirebaseDatabase database;
     DatabaseReference reference;
 
@@ -34,38 +40,58 @@ public class SignUpActivity extends AppCompatActivity {
         signupPassword = findViewById(R.id.signup_password);
         loginRedirectText = findViewById(R.id.loginRedirectText);
         signupButton = findViewById(R.id.signup_button);
-        Spinner roleSpinner = findViewById(R.id.signup_role_spinner);
+        roleSpinner = findViewById(R.id.signup_role_spinner);
+
+        // Adapter pour le Spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.roles_array,
                 android.R.layout.simple_spinner_item
         );
-
-        // Specify the layout to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // Set the adapter to the Spinner
         roleSpinner.setAdapter(adapter);
+
+        // Initialisation FirebaseAuth
+        mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference("users");
+
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                database = FirebaseDatabase.getInstance();
-                reference = database.getReference("users");
-
                 String name = signupName.getText().toString();
                 String email = signupEmail.getText().toString();
                 String username = signupUsername.getText().toString();
                 String password = signupPassword.getText().toString();
-                String role = roleSpinner.getSelectedItem().toString(); // Get selected role
+                String role = roleSpinner.getSelectedItem().toString();
 
+                // Validation des champs
+                if (name.isEmpty()) {
+                    signupName.setError("Name cannot be empty");
+                    return;
+                }
+                if (email.isEmpty()) {
+                    signupEmail.setError("Email cannot be empty");
+                    return;
+                } else if (!email.matches("[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")) {
+                    signupEmail.setError("Invalid email format");
+                    return;
+                }
+                if (username.isEmpty()) {
+                    signupUsername.setError("Username cannot be empty");
+                    return;
+                }
+                if (password.isEmpty() || password.length() < 6) {
+                    signupPassword.setError("Password must be at least 6 characters");
+                    return;
+                }
+                if (role.equals("Select a role")) {
+                    Toast.makeText(SignUpActivity.this, "Please select a role", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                HelperClass helperClass = new HelperClass(name, email, username, password,role);
-                reference.child(username).setValue(helperClass);
-
-                Toast.makeText(SignUpActivity.this, "You have signup successfully!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
-                startActivity(intent);
+                // Enregistrer l'utilisateur avec Firebase Authentication
+                registerUser(name, email, username, password, role);
             }
         });
 
@@ -76,5 +102,27 @@ public class SignUpActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void registerUser(String name, String email, String username, String password, String role) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            // Ajouter des informations utilisateur dans Realtime Database
+                            String userId = firebaseUser.getUid();
+                            HelperClass helperClass = new HelperClass(name, email, username,password,role);
+                            reference.child(userId).setValue(helperClass);
+
+                            Toast.makeText(SignUpActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                    } else {
+                        Toast.makeText(SignUpActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }

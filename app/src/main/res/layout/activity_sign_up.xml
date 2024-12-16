@@ -7,9 +7,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/pagebkg"
     tools:context=".SignUpActivity"
-    android:id="@+id/main">
+    android:id="@+id/main"
+    android:background="#343434">
+    <!--android:background="@drawable/pagebkg"-->
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -23,8 +24,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_gravity="center_horizontal"
-            android:padding="24dp"
-            android:background="@drawable/lavender_border">
+            android:padding="24dp">
+            <!--android:background="@drawable/lavender_border"-->
 
             <TextView
                 android:layout_width="match_parent"

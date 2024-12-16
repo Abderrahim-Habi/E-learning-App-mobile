@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+tools:context=".LoginActivity"
+android:background="#343434"
+android:id="@+id/main">
+
+<ImageView
+    android:id="@+id/imageView2"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:srcCompat="@drawable/top_background"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"/>
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Texte de bienvenue -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Welcome Back"
+            android:layout_marginTop="100dp"
+            android:layout_marginBottom="100dp"
+            android:layout_marginStart="32dp"
+            android:textColor="#ffffff"
+            android:textSize="48sp"
+            android:textStyle="bold" />
+
+        <!-- Champ Email -->
+        <EditText
+            android:id="@+id/login_username"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="UserName"
+            android:textColorHint="#ffffff"
+            android:padding="8dp"
+            android:drawablePadding="16dp"
+            android:inputType="textEmailAddress"
+            android:drawableStart="@drawable/name"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/edittex_background1" />
+
+        <!-- Champ Mot de passe -->
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Mot de passe"
+            android:textColorHint="#ffffff"
+            android:padding="8dp"
+            android:drawablePadding="16dp"
+            android:inputType="textPassword"
+            android:drawableStart="@drawable/password"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/edittex_background1" />
+        <ImageView
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
+            android:layout_gravity="end"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16sp"
+            app:srcCompat="@drawable/btn_login"
+            />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/sign_google"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            style="@android:style/Widget.Button"
+            android:textColor="#ffffff"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:drawableStart="@drawable/google"
+            android:drawablePadding="16dp"
+            android:padding="16dp"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:text="SignUp with Google"
+            android:background="@drawable/background_btn_2"
+            android:layout_marginTop="16dp"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            style="@android:style/Widget.Button"
+            android:textColor="#ffffff"
+            android:layout_marginEnd="32dp"
+            android:layout_marginStart="32dp"
+            android:drawableStart="@drawable/facebook"
+            android:drawablePadding="16dp"
+            android:padding="16dp"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:text="SignUp with Facebook"
+            android:background="@drawable/background_btn_2"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/signupRedirectText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Are you new user?Register"
+            android:textColor="#E1A500"
+            android:textStyle="bold"
+            android:layout_marginTop="32dp"
+            android:textAlignment="center"/>
+    </LinearLayout>
+
+</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

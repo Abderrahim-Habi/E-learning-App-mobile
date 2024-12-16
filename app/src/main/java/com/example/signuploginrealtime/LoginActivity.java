@@ -11,63 +11,61 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText loginUsername, loginPassword;
+    EditText loginEmail, loginPassword;
     Button loginButton;
     TextView signupRedirectText;
+
+    FirebaseAuth mAuth;
+    DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginUsername = findViewById(R.id.login_username);
+        loginEmail = findViewById(R.id.login_email);
         loginPassword = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button);
         signupRedirectText = findViewById(R.id.signupRedirectText);
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!validateUsername() | !validatePassword()) {
+        mAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
 
-                } else {
-                    checkUser();
-                }
+        loginButton.setOnClickListener(view -> {
+            if (!validateEmail() | !validatePassword()) {
+                return;
             }
+            loginUser();
         });
 
-        signupRedirectText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-                startActivity(intent);
-            }
+        signupRedirectText.setOnClickListener(view -> {
+            Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+            startActivity(intent);
         });
-
     }
-    public Boolean validateUsername() {
-        String val = loginUsername.getText().toString();
+
+    public Boolean validateEmail() {
+        String val = loginEmail.getText().toString();
         if (val.isEmpty()) {
-            loginUsername.setError("Username cannot be empty");
+            loginEmail.setError("Email cannot be empty");
             return false;
         } else {
-            loginUsername.setError(null);
+            loginEmail.setError(null);
             return true;
         }
     }
 
-    public Boolean validatePassword(){
+    public Boolean validatePassword() {
         String val = loginPassword.getText().toString();
         if (val.isEmpty()) {
             loginPassword.setError("Password cannot be empty");
@@ -78,63 +76,56 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    public void loginUser() {
+        String email = loginEmail.getText().toString().trim();
+        String password = loginPassword.getText().toString().trim();
 
-    public void checkUser() {
-        String userUsername = loginUsername.getText().toString().trim();
-        String userPassword = loginPassword.getText().toString().trim();
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            String userId = user.getUid();
+                            databaseReference.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if (snapshot.exists()) {
+                                        String name = snapshot.child("name").getValue(String.class);
+                                        String username = snapshot.child("username").getValue(String.class);
+                                        String role = snapshot.child("role").getValue(String.class);
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        Query checkUserDatabase = reference.orderByChild("username").equalTo(userUsername);
+                                        Intent intent;
+                                        if ("Student".equalsIgnoreCase(role)) {
+                                            intent = new Intent(LoginActivity.this, HomeCourses.class);
+                                        } else if ("Instructor".equalsIgnoreCase(role)) {
+                                            intent = new Intent(LoginActivity.this, CRUD.class); // Replace with actual activity for instructors
+                                        } else {
+                                            Toast.makeText(LoginActivity.this, "Unknown role: " + role, Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
 
-        checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    loginUsername.setError(null);
-                    String passwordFromDB = snapshot.child(userUsername).child("password").getValue(String.class);
+                                        // Add extras to the intent
+                                        intent.putExtra("name", name);
+                                        intent.putExtra("email", email);
+                                        intent.putExtra("username", username);
+                                        intent.putExtra("role", role);
 
-                    if (passwordFromDB != null && passwordFromDB.equals(userPassword)) {
-                        loginUsername.setError(null);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, "User data not found in database!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
 
-                        String nameFromDB = snapshot.child(userUsername).child("name").getValue(String.class);
-                        String emailFromDB = snapshot.child(userUsername).child("email").getValue(String.class);
-                        String usernameFromDB = snapshot.child(userUsername).child("username").getValue(String.class);
-                        String roleFromDB = snapshot.child(userUsername).child("role").getValue(String.class);
-
-                        // Create an intent based on the role
-                        Intent intent;
-                        if ("Student".equalsIgnoreCase(roleFromDB)) {
-                            intent = new Intent(LoginActivity.this, HomeCourses.class);
-                        } else if ("Instructor".equalsIgnoreCase(roleFromDB)) {
-                            intent = new Intent(LoginActivity.this, CRUD.class); // Replace with the actual activity name for instructors
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Unknown role: " + roleFromDB, Toast.LENGTH_SHORT).show();
-                            return;
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Toast.makeText(LoginActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
-
-                        // Add common extras
-                        intent.putExtra("name", nameFromDB);
-                        intent.putExtra("email", emailFromDB);
-                        intent.putExtra("username", usernameFromDB);
-                        intent.putExtra("password", passwordFromDB);
-                        intent.putExtra("role", roleFromDB);
-
-                        startActivity(intent);
                     } else {
-                        loginPassword.setError("Invalid Credentials");
-                        loginPassword.requestFocus();
+                        Toast.makeText(LoginActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    loginUsername.setError("User does not exist");
-                    loginUsername.requestFocus();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(LoginActivity.this, "Database error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                });
     }
-
 }

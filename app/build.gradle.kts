@@ -43,10 +43,12 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.firebase.database)
     implementation(libs.picasso)
-
-
+    implementation(libs.firebase.auth)
+    implementation(libs.play.services.auth)  // Pour l'authentification Google
+    implementation(libs.firebase.database)
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }
+

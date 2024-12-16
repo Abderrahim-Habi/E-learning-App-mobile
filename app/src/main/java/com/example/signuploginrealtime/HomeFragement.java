@@ -58,6 +58,7 @@ public class HomeFragement extends Fragment {
             courseBundle.putString("courseCategory", selectedCourse.getCategory());
             courseBundle.putString("courseDescription", selectedCourse.getDescription());
             courseBundle.putString("courseImageUrl", selectedCourse.getImage());
+            courseBundle.putString("youtubeUrl",selectedCourse.getYoutubeUrl());
             detailsFragment.setArguments(courseBundle);
 
             // Replace the current fragment with DetailsFragment

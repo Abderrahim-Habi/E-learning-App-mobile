@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "649410973699",
+    "firebase_url": "https://signup-login-realtime-abd7a-default-rtdb.firebaseio.com",
     "project_id": "signup-login-realtime-abd7a",
     "storage_bucket": "signup-login-realtime-abd7a.firebasestorage.app"
   },
